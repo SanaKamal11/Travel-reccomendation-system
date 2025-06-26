@@ -1,13 +1,19 @@
 import pandas as pd
 
-def recommend_destination(climate=None, activity=None, cost=None):
-    df = pd.read_csv("data/destinations.csv")
+DATA = pd.read_csv("data/processed/merged_destinations.csv")
+
+def recommend_destination(climate=None, activity=None, cost=None, safety_min=None, visa_free=None):
+    df = DATA.copy()
 
     if climate:
-        df = df[df["Climate"].str.lower() == climate.lower()]
+        df = df[df["AvgTemperature"].between(*climate)]
     if activity:
-        df = df[df["Activity"].str.lower() == activity.lower()]
+        df = df[df["Category"].str.contains(activity, case=False)]
     if cost:
-        df = df[df["Cost"].str.lower() == cost.lower()]
-    
-    return df if not df.empty else "No matching destination found."
+        df = df[df["Cost_of_Living_Index"] <= cost]
+    if safety_min:
+        df = df[df["SafetyIndex"] >= safety_min]
+    if visa_free is not None:
+        df = df[df["Visa_free"] == visa_free]
+
+    return df[["City", "Country"]].drop_duplicates() or "No matching destination found."
