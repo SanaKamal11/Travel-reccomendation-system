@@ -16,3 +16,7 @@ This project filters travel destinations from a dataset based on keywords (like 
 ## How to Run
 
 1. Install dependencies:
+
+
+2. Run the code:
+
